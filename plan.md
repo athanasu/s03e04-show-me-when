@@ -8,13 +8,13 @@ what just broke and takes it.
 | flow | who | what happens |
 |------|-----|--------------|
 | `open-board` | on-call | opens the board; sees tonight's incidents |
-| `ack-incident` | on-call | picks an incident on the board and acks it — "I've got this one" |
+| `ack-incident` | on-call | picks an incident on the board; its row opens the incident panel, which names the incident; on-call acks it there — "I've got this one" |
 | `watch-board` | on-call | keeps the board open; it stays current without a reload |
 
 ## Requirements
 
 - **R1** New incidents appear live at the top of the list, newest first.
-- **R2** Each incident row has an **Ack** button. Ack sends the ack (`api.ack(id)`) and marks the row acked.
+- **R2** *(changed 2026-11-12, product, SCHED-4515)* A row has no Ack button. A row opens its **incident panel**. The panel names the incident by id and stays on that incident while rows move. **Ack** lives in the panel: it sends the ack (`api.ack(id)`) for the incident the panel names and marks that incident's row acked.
 - **R3** Show a loader until incidents load.
 - **R4** The board refreshes itself every 2 seconds while open.
 - **R5** Times show in the viewer's local time; day before month for EU locales (dd/mm).
@@ -29,9 +29,19 @@ what just broke and takes it.
 | `empty` | what shows when there are no incidents |
 | `incident-list` | the list |
 | `incident-row` | one incident row, with `data-id="<incident id>"` |
-| `ack` | the Ack button in a row |
+| `incident-panel` | the incident panel, naming the incident id (added by SCHED-4515) |
+| `panel-ack` | the Ack button in the panel (added by SCHED-4515) |
 | `acked` | the acked mark in a row |
 | `build-sha` | the sha in the footer |
+
+`ack` (the Ack button in a row) was removed by SCHED-4515: rows hold no Ack.
+
+## Decisions
+
+- **2026-11-12 · product · SCHED-4515.** Evidence: build 47b267a, recording at 00:14 — the pointer rested on Ack of
+  INC-4114, a new incident arrived (R1, R4), the rows moved down, and the click acked INC-8143. Decision: "New
+  incidents stay live at the top. Ack leaves the row: a row opens its incident panel, and Ack lives there."
+  R1 and R4 are unchanged.
 
 ## Done
 

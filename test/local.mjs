@@ -30,11 +30,19 @@ for (const [locale, timezoneId] of [['en-NZ', 'Pacific/Auckland'], ['de-DE', 'Eu
   assert.equal(await page.getByTestId('build-sha').textContent(), sha);
   const n0 = await page.getByTestId('incident-row').count();
   const top0 = await page.getByTestId('incident-row').first().getAttribute('data-id');
-  // Ack the third row, then wait for a new incident and check the mark stays on that incident.
+  // SCHED-4515: no Ack in a row; a row opens the panel, the panel names the incident, Ack lives there.
+  assert.equal(await page.getByTestId('ack').count(), 0, 'no Ack in rows');
+  assert.equal(await page.getByTestId('incident-panel').isVisible(), false);
+  const other = page.getByTestId('incident-row').nth(1);
+  await other.click();
+  assert.ok((await page.getByTestId('incident-panel').innerText()).includes(await other.getAttribute('data-id')));
   const target = page.getByTestId('incident-row').nth(2);
   const id = await target.getAttribute('data-id');
-  await target.getByTestId('ack').click();
+  await target.click();
+  assert.ok((await page.getByTestId('incident-panel').innerText()).includes(id), 'panel names the picked incident');
+  await page.getByTestId('panel-ack').click();
   await page.locator(`[data-id="${id}"] [data-testid="acked"]`).waitFor();
+  assert.equal(await page.getByTestId('panel-ack').count(), 0, 'no second ack for the same incident');
   assert.equal(ackUrl.searchParams.get('id'), id);
   assert.ok(ackUrl.searchParams.get('cursor')?.length > 20, 'ack carries the cursor');
   await page.waitForFunction((n) => document.querySelectorAll('[data-testid="incident-row"]').length > n, n0, { timeout: 40000 });
@@ -42,6 +50,9 @@ for (const [locale, timezoneId] of [['en-NZ', 'Pacific/Auckland'], ['de-DE', 'Eu
   assert.notEqual(top1, top0, 'new incident on top without reload');
   assert.equal(await page.locator(`[data-id="${id}"] [data-testid="acked"]`).count(), 1, 'acked mark survives refresh');
   assert.equal(await page.getByTestId('acked').count(), 1);
+  assert.ok((await page.getByTestId('incident-panel').innerText()).includes(id), 'panel stays on its incident while rows move');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.getByTestId('incident-panel').isVisible(), false);
   const times = await page.locator('[data-testid="incident-row"] time').evaluateAll((ts) => ts.map((t) => [t.dateTime, t.textContent]));
   const order = times.map(([d]) => d);
   assert.deepEqual(order, [...order].sort().reverse(), 'newest first');

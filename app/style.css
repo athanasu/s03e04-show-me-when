@@ -9,7 +9,22 @@ h1 { margin: 0; font-size: 22px; }
 .row.sev2 .sev { color: #a15c00; }
 .row time { color: #555; font-variant-numeric: tabular-nums; }
 footer { color: #777; font-size: 13px; }
-.row { grid-template-columns: 90px 50px 1fr 230px 150px; }
+.layout { display: flex; gap: 16px; align-items: flex-start; }
+.list { flex: 1 1 auto; min-width: 0; }
+.row { grid-template-columns: 90px 50px 1fr 230px 150px; cursor: pointer; }
+.row:hover { background: #f4f6fa; }
+.row.is-open { box-shadow: inset 4px 0 0 #1d1d1f; }
+.row .open { all: unset; font-family: ui-monospace, monospace; text-decoration: underline; cursor: pointer; }
+.row .open:focus-visible, .panel-close:focus-visible { outline: 3px solid #4c8dff; outline-offset: 2px; }
+.panel { position: sticky; top: 12px; flex: 0 0 260px; box-sizing: border-box; padding: 16px; border: 1px solid #1d1d1f; border-radius: 8px; background: #fff; }
+.panel[hidden] { display: none; }
+.panel h2 { margin: 0 0 4px; font: 600 20px ui-monospace, monospace; }
+.panel p { margin: 4px 0; }
+.panel .sev1 { color: #b00020; font-weight: 600; }
+.panel .sev2 { color: #a15c00; }
+.panel-time { display: block; color: #555; margin: 4px 0 14px; }
+.panel-action .ack { width: 100%; min-height: 44px; }
+.panel-close { all: unset; display: block; margin-top: 12px; text-decoration: underline; cursor: pointer; color: #333; }
 .row.is-acked { background: #f1f8f1; }
 .ack { min-height: 32px; padding: 0 14px; font: inherit; border: 1px solid #1d1d1f; border-radius: 6px; background: #1d1d1f; color: #fff; cursor: pointer; }
 .ack:disabled { opacity: 0.6; cursor: progress; }
@@ -17,4 +32,8 @@ footer { color: #777; font-size: 13px; }
 .acked { color: #1b6e2d; font-size: 13px; }
 .loader, .empty { color: #555; }
 .status { color: #b00020; }
-@media (max-width: 720px) { .row { grid-template-columns: 1fr auto; padding: 8px 12px; } }
+@media (max-width: 720px) {
+  .row { grid-template-columns: 1fr auto; padding: 8px 12px; }
+  .layout { display: block; }
+  .panel { position: fixed; left: 8px; right: 8px; bottom: 8px; top: auto; box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3); }
+}
