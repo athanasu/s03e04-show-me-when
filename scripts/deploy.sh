@@ -4,6 +4,7 @@ set -eu
 sha=$(node scripts/build.mjs)
 touch dist/.nojekyll
 tmp=$(mktemp -d)
+name=$(git log -1 --format=%an); email=$(git log -1 --format=%ae); origin=$(git remote get-url origin)
 cp -R dist/. "$tmp"/
 # keep recordings that are already published
 git fetch -q origin gh-pages 2>/dev/null && git archive FETCH_HEAD recordings 2>/dev/null | tar -x -C "$tmp" || true
@@ -11,6 +12,6 @@ git fetch -q origin gh-pages 2>/dev/null && git archive FETCH_HEAD recordings 2>
 cd "$tmp"
 git init -q -b gh-pages
 git add -A
-git -c user.name="$(git -C "$OLDPWD" config user.name)" -c user.email="$(git -C "$OLDPWD" config user.email)" commit -q -m "Deploy $sha"
-git push -q -f "$(git -C "$OLDPWD" remote get-url origin)" gh-pages
+git -c user.name="$name" -c user.email="$email" commit -q -m "Deploy $sha"
+git push -q -f "$origin" gh-pages
 echo "deployed $sha"
