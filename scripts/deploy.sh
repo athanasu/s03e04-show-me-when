@@ -8,7 +8,7 @@ name=$(git log -1 --format=%an); email=$(git log -1 --format=%ae); origin=$(git 
 cp -R dist/. "$tmp"/
 # keep recordings that are already published
 git fetch -q origin gh-pages 2>/dev/null && git archive FETCH_HEAD recordings 2>/dev/null | tar -x -C "$tmp" || true
-[ -d recordings ] && mkdir -p "$tmp/recordings" && cp -R recordings/. "$tmp/recordings"/ || true
+[ -d recordings ] && mkdir -p "$tmp/recordings" && cp recordings/*.webm "$tmp/recordings"/ || true
 cd "$tmp"
 git init -q -b gh-pages
 git add -A
